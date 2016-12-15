@@ -71,6 +71,16 @@ The third feature in this table is a feature I engineered myself. My idea was th
 ## Algorithm selection
 > What algorithm did you end up using? What other one(s) did you try? How did model performance differ between algorithms?
 
+Result using top-5 features and a Naive Bayes classifier:
+Accuracy: 0.73900       Precision: 0.22604      Recall: 0.39500 F1: 0.28753     F2: 0.34363
+       Total predictions: 15000        True positives:  790    False positives: 2705   False negatives: 1210   True negatives: 10295
+
+Changing to top-10 features results in exactly the same results
+
+Using feature scaling with top-10 features results in same results
+
+
+
 #### Pick an algorithm
 At least 2 different algorithms are attempted and their performance is compared, with the more performant one used in the final analysis.
 

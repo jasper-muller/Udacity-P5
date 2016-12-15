@@ -17,7 +17,6 @@ features = ['poi',
             'deferral_payments',
             'deferred_income',
             'director_fees',
-            'email_address',
             'exercised_stock_options',
             'expenses',
             'from_messages',
@@ -34,12 +33,7 @@ features = ['poi',
             'total_payments',
             'total_stock_value']
 
-features_list = ['poi', 'bonus', 'director_fees', 'exercised_stock_options',
-                 'total_payments', 'total_stock_value', 'long_term_incentive',
-                 'salary']  # You will need to use more features
-
-# NB: if we only use financial features, we don't have to scale our features
-from sklearn.feature_selection import f_classif, SelectKBest
+features_list = features
 
 # Load the dictionary containing the dataset
 with open("final_project_dataset.pkl", "r") as data_file:
@@ -62,7 +56,7 @@ for employee in data_dict:
     # the result for the new feature will also be 'NaN'
     if to_messages == 'NaN' or from_poi_to_this_person == 'NaN':
         data_dict[employee]['relative_messages_to_poi'] = 'NaN'
-    elif from_messages == 'NaN' or from_this_person_to_poi == 'NaN':
+    if from_messages == 'NaN' or from_this_person_to_poi == 'NaN':
         data_dict[employee]['relative_messages_from_poi'] = 'NaN'
 
     # If both input features are not 'NaN', calculate the new features
@@ -85,6 +79,20 @@ my_dataset = data_dict
 data = featureFormat(my_dataset, features_list, sort_keys = True)
 labels, features = targetFeatureSplit(data)
 
+from sklearn.preprocessing import MinMaxScaler
+
+scaler = MinMaxScaler()
+features = scaler.fit_transform(features)
+
+from sklearn.cross_validation import train_test_split
+features_train, features_test, labels_train, labels_test = \
+    train_test_split(features, labels, test_size=0.3, random_state=42)
+
+from sklearn.feature_selection import f_classif, SelectKBest
+selector = SelectKBest(f_classif, k=10)
+selected_features = selector.fit_transform(features_train, labels_train)
+
+
 # Task 4: Try a varity of classifiers
 # Please name your classifier clf for easy export below.
 # Note that if you want to do PCA or other multi-stage operations,
@@ -93,7 +101,9 @@ labels, features = targetFeatureSplit(data)
 
 # Provided to give you a starting point. Try a variety of classifiers.
 from sklearn.naive_bayes import GaussianNB
+
 clf = GaussianNB()
+clf = clf.fit(features_train, labels_train)
 
 # Task 5: Tune your classifier to achieve better than .3 precision and recall
 # using our testing script. Check the tester.py script in the final project
@@ -103,18 +113,8 @@ clf = GaussianNB()
 # http://scikit-learn.org/stable/modules/generated/sklearn.cross_validation.StratifiedShuffleSplit.html
 
 # Example starting point. Try investigating other evaluation techniques!
-from sklearn.cross_validation import train_test_split
-features_train, features_test, labels_train, labels_test = \
-    train_test_split(features, labels, test_size=0.3, random_state=42)
 
 
-selector = SelectKBest(score_func=f_classif, k=4)
-
-selector = selector.fit(features_train, labels_train)
-
-print features_list
-print selector.pvalues_
-print selector.scores_
 # Task 6: Dump your classifier, dataset, and features_list so anyone can
 # check your results. You do not need to change anything below, but make sure
 # that the version of poi_id.py that you submit can be run on its own and
