@@ -41,6 +41,14 @@ features_list = ['poi', 'bonus', 'director_fees', 'exercised_stock_options',
                  'salary']  # You will need to use more features
 
 # NB: if we only use financial features, we don't have to scale our features
+from sklearn.feature_selection import f_classif, SelectKBest
+
+selector = SelectKBest(score_func=f_classif, k=10)
+
+selector = selector.fit(features_train, labels_train)
+
+print selector.pvalues_
+print selector.scores_
 
 # Load the dictionary containing the dataset
 with open("final_project_dataset.pkl", "r") as data_file:
@@ -59,14 +67,14 @@ for employee in data_dict:
     from_poi_to_this_person = data_dict[employee]['from_poi_to_this_person']
     from_this_person_to_poi = data_dict[employee]['from_this_person_to_poi']
 
-    # If either of the input features for our new feature is 'NaN',
-    # the result for our new feature will also be 'NaN'
+    # If either of the input features for the new feature is 'NaN',
+    # the result for the new feature will also be 'NaN'
     if to_messages == 'NaN' or from_poi_to_this_person == 'NaN':
         data_dict[employee]['relative_messages_to_poi'] = 'NaN'
     elif from_messages == 'NaN' or from_this_person_to_poi == 'NaN':
         data_dict[employee]['relative_messages_from_poi'] = 'NaN'
 
-    # If both input features are not NaN, calculate our new features
+    # If both input features are not 'NaN', calculate the new features
     else:
         # Convert to float here, otherwise the check for 'NaN' above would not have worked correctly
         # (values would be the 'real' nan)
