@@ -68,6 +68,7 @@ def featureFormat( dictionary, features, remove_NaN=True, remove_all_zeroes=True
                 dictionary[key][feature]
             except KeyError:
                 print "error: key ", feature, " not present"
+                print key
                 return
             value = dictionary[key][feature]
             if value=="NaN" and remove_NaN:

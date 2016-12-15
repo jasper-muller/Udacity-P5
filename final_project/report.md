@@ -54,26 +54,22 @@ Apart from this obvious outlier, there was one other employee that I excluded: *
 ## Feature selection
 > What features did you end up using in your POI identifier, and what selection process did you use to pick them?
 
-> Did you have to do any scaling? Why or why not?
+I used scikit-learn's `SelectKBest` module to select what features to use in training an algorithm. I compared the results of using SelectKBest with scaled and non-scaled features and found that the results were exactly the same. This is logical because scaling features does not change the relative distribution of variances between features.
 
-> As part of the assignment, you should attempt to engineer your own feature that does not come ready-made in the dataset -- explain what feature you tried to make, and the rationale behind it.
+I used `f-classif` as scoring function in `SelectKBest`. As a starting point, I chose to include the top-5 features. The resulting five features, along with their scores and p-values, can be found in the table below.
 
-> If you used an algorithm like a decision tree, please also give the feature importances of the features that you use
+| feature  | F-score  | p-value  |
+|----------|--------|----------|
+| bonus  | 30.7  | 2.50e-07  |
+| salary  | 15.9  | 1.31e-04  |
+| relative_messages_to_poi  | 15.8  |  1.33e-04 |
+| shared_receipt_with_poi  | 10.7   | 1.46e-03 |
+| total_stock_value  | 10.6 | 1.53e-03 |
 
-> If you used an automated feature selection function like SelectKBest, please report the feature scores and reasons for your choice of parameter values.
-
-#### Create new features
-At least one new feature is implemented. Justification for that feature is provided in the written response, and the effect of that feature on the final algorithm performance is tested. The student is not required to include their new feature in their final feature set.
-
-#### Properly scale features
-If algorithm calls for scaled features, feature scaling is deployed.
-
-#### Intelligently select features
-- Univariate or recursive feature selection is deployed, or features are selected by hand (different combinations of features are attempted, and the performance is documented for each one).
-- Features that are selected are reported and the number of features selected is justified. For an algorithm that supports getting the feature importances (e.g. decision tree) or feature scores (e.g. SelectKBest), those are documented as well.
+The third feature in this table is a feature I engineered myself. My idea was that it does not make sense to look at just he number of messages sent to a person of interest. Rather, I want to include what proportion of emails sent by someone is sent to a person of interest.
 
 ## Algorithm selection
-> What algorithm did you end up using? What other one(s) did you try? How did model performance differ between algorithms?  [relevant rubric item: “pick an algorithm”]
+> What algorithm did you end up using? What other one(s) did you try? How did model performance differ between algorithms?
 
 #### Pick an algorithm
 At least 2 different algorithms are attempted and their performance is compared, with the more performant one used in the final analysis.

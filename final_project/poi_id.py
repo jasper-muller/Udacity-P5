@@ -12,7 +12,6 @@ from tester import dump_classifier_and_data
 # features_list is a list of strings, each of which is a feature name.
 # The first feature must be "poi".
 
-"""
 features = ['poi',
             'bonus',
             'deferral_payments',
@@ -34,7 +33,6 @@ features = ['poi',
             'to_messages',
             'total_payments',
             'total_stock_value']
-"""
 
 features_list = ['poi', 'bonus', 'director_fees', 'exercised_stock_options',
                  'total_payments', 'total_stock_value', 'long_term_incentive',
@@ -42,13 +40,6 @@ features_list = ['poi', 'bonus', 'director_fees', 'exercised_stock_options',
 
 # NB: if we only use financial features, we don't have to scale our features
 from sklearn.feature_selection import f_classif, SelectKBest
-
-selector = SelectKBest(score_func=f_classif, k=10)
-
-selector = selector.fit(features_train, labels_train)
-
-print selector.pvalues_
-print selector.scores_
 
 # Load the dictionary containing the dataset
 with open("final_project_dataset.pkl", "r") as data_file:
@@ -116,6 +107,14 @@ from sklearn.cross_validation import train_test_split
 features_train, features_test, labels_train, labels_test = \
     train_test_split(features, labels, test_size=0.3, random_state=42)
 
+
+selector = SelectKBest(score_func=f_classif, k=4)
+
+selector = selector.fit(features_train, labels_train)
+
+print features_list
+print selector.pvalues_
+print selector.scores_
 # Task 6: Dump your classifier, dataset, and features_list so anyone can
 # check your results. You do not need to change anything below, but make sure
 # that the version of poi_id.py that you submit can be run on its own and
