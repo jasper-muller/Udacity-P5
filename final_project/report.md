@@ -73,13 +73,15 @@ The third feature in this table is a feature I engineered myself. My idea was th
 
 Result using top-5 features and a Naive Bayes classifier:
 Accuracy: 0.73900       Precision: 0.22604      Recall: 0.39500 F1: 0.28753     F2: 0.34363
-       Total predictions: 15000        True positives:  790    False positives: 2705   False negatives: 1210   True negatives: 10295
+Total predictions: 15000        True positives:  790    False positives: 2705   False negatives: 1210   True negatives: 10295
 
 Changing to top-10 features results in exactly the same results
 
 Using feature scaling with top-10 features results in same results
 
-
+GaussianNB()
+Accuracy: 0.81940       Precision: 0.35654      Recall: 0.44050 F1: 0.39410     F2: 0.42069
+        Total predictions: 15000        True positives:  881    False positives: 1590   False negatives: 1119   True negatives: 11410
 
 #### Pick an algorithm
 At least 2 different algorithms are attempted and their performance is compared, with the more performant one used in the final analysis.

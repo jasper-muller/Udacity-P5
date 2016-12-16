@@ -33,7 +33,9 @@ features = ['poi',
             'total_payments',
             'total_stock_value']
 
-features_list = features
+features_list = ['poi', 'bonus', 'director_fees', 'exercised_stock_options',
+                 'total_payments', 'total_stock_value', 'long_term_incentive',
+                 'salary']
 
 # Load the dictionary containing the dataset
 with open("final_project_dataset.pkl", "r") as data_file:
@@ -88,10 +90,9 @@ from sklearn.cross_validation import train_test_split
 features_train, features_test, labels_train, labels_test = \
     train_test_split(features, labels, test_size=0.3, random_state=42)
 
-from sklearn.feature_selection import f_classif, SelectKBest
-selector = SelectKBest(f_classif, k=10)
-selected_features = selector.fit_transform(features_train, labels_train)
-
+# from sklearn.feature_selection import f_classif, SelectKBest
+# selector = SelectKBest(f_classif, k=10)
+# selected_features_train = selector.fit_transform(features_train, labels_train)
 
 # Task 4: Try a varity of classifiers
 # Please name your classifier clf for easy export below.
@@ -113,7 +114,6 @@ clf = clf.fit(features_train, labels_train)
 # http://scikit-learn.org/stable/modules/generated/sklearn.cross_validation.StratifiedShuffleSplit.html
 
 # Example starting point. Try investigating other evaluation techniques!
-
 
 # Task 6: Dump your classifier, dataset, and features_list so anyone can
 # check your results. You do not need to change anything below, but make sure
