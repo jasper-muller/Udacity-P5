@@ -4,23 +4,29 @@ Introduction
 ## Project goals
 >Summarize for us the goal of this project and how machine learning is useful in trying to accomplish it.
 
-The goal of this project is to identify people that participated in the Enron fraud. The starting point for this investigation is a dataset on Enron employees, which contains information on both employee financials and emails. More importantly, part of the dataset was manually labelled to distinguish between people of interest (POI) and people that were not of interest (no POI).
+The goal of this project is to identify people that participated in the Enron fraud. The starting point for this investigation is a dataset on Enron employees that describes both employee financials and email behavior. Part of the dataset was manually labelled to distinguish between persons of interest (POI) and people that were not of interest. Persons of interest are those people for which it is known that they took part in the fraud.
 
 We use the labelled data to train a machine learning algorithm that will help us to identify persons of interest.
 
 > Give some background on the dataset and how it can be used to answer the project question.
 
-The dataset used for training our machine-learning algorithm contains information on 146 Enron employees across 21 features. In total, 18 of these employees were labelled as a person of interest. The 21 features can roughly be divided in the following four categories:
+The dataset used for training the classifier contains information on 146 Enron employees across 21 features. In total, 18 of these employees were labelled as a person of interest. The features in the dataset, such as the total bonus paid to an employee, may be an indication of an employee being involved in fraud. The 21 features can roughly be divided in the following categories:
 
 Related to financials (in USD):
-- **bonus**: financial bonus received by this person
-- **salary**: yearly salary received by this person
-- **total_stock_value**: total value of the stocks owned by this person
-- **total_payments**: sum of all payments by Enron to this person
+- **bonus**: financial bonus
+- **salary**: yearly salary
+- **total_stock_value**: total value of the stocks owned
+- **restricted_stock**: some form of stock value
+- **restricted_stock_deferred**: some form of stock value
+- **total_payments**: sum of all payments
 - **expenses**: the expenses done by Enron for this person
 - **director_fees**: the fees received by this person because he/she is a director
 - **exercised_stock_options**: stock options that were traded for money before Enron's bankruptcy
-- **long_term_incentive**: some kind of bonus that is paid for achieving long term results
+- **long_term_incentive**: bonus that is paid for achieving long term results
+- **deferred_income**: salary that is not paid right away, but put aside for withdrawal at some later time
+- **deferral_payments**: amount of money withdrawn from deferred income
+- **loan_advances**: loan provided by Enron to an employee
+- **other**: other payments
 
 Related to emails:
 - **email_address**: the person's email address
@@ -28,20 +34,10 @@ Related to emails:
 - **to_messages**: the amount of email messages received by this person
 - **from_poi_to_this_person**: the amount of email messages from a person of interest to this person
 - **from_this_person_to_poi**: the amount of email messages from this person to a person of interest
+- shared_receipt_with_poi
 
 Related to persons of interest:
 - **poi**: flag to identify whether a person is a person of interest. E.g. because of lawsuits etc.
-
-And lastly, the features for which I do not yet understand their meaning:
-- deferral_payments
-- deferred_income
-- loan_advances
-- other
-- restricted_stock
-- restricted_stock_deferred
-- shared_receipt_with_poi
-
-It must be obvious that I will not use the features for which I do not understand their meaning. For all other features, I will try and see how well they are able to classify an Enron employee as a person of interest.
 
 > Were there any outliers in the data when you got it, and how did you handle those?
 
@@ -49,14 +45,12 @@ For the full exploration of outliers, please refer to the notebook included with
 
 The first outlier that immediately caught my eye, was the entry *TOTAL*. I found this outlier by plotting a histogram of employee salaries, which showed a value of 26.7 million USD all the way to the right. Assuming that this entry describes the total for all numeric columns, I removed the entry from the dataset.
 
-Apart from this obvious outlier, there was one other employee that I excluded: *The Travel Agency In The Park*. This entry suggested that it did not describe an employee but rather a company of some sort.
+Apart from this obvious outlier, there was one other employee that I excluded: *The Travel Agency In The Park*. The name of this entry suggested that it did not describe an employee but rather a company of some sort.
 
 ## Feature selection
 > What features did you end up using in your POI identifier, and what selection process did you use to pick them?
 
-I used scikit-learn's `SelectKBest` module to select what features to use in training an algorithm. I compared the results of using SelectKBest with scaled and non-scaled features and found that the results were exactly the same. This is logical because scaling features does not change the relative distribution of variances between features.
-
-I used `f-classif` as scoring function in `SelectKBest`. As a starting point, I chose to include the top-5 features. The resulting five features, along with their scores and p-values, can be found in the table below.
+Initially I used scikit-learn's `SelectKBest` module to select what features to use in training a classifier. As a scoring function I used `f-classif` and as a starting point I chose to include the top-5 features. The resulting five features, along with their scores and p-values, can be found in the table below.
 
 | feature  | F-score  | p-value  |
 |----------|--------|----------|
@@ -66,10 +60,21 @@ I used `f-classif` as scoring function in `SelectKBest`. As a starting point, I 
 | shared_receipt_with_poi  | 10.7   | 1.46e-03 |
 | total_stock_value  | 10.6 | 1.53e-03 |
 
-The third feature in this table is a feature I engineered myself. My idea was that it does not make sense to look at just he number of messages sent to a person of interest. Rather, I want to include what proportion of emails sent by someone is sent to a person of interest.
+The third feature in this table is a feature I engineered myself. My idea was that it does not make sense to look at just he number of messages sent to a person of interest. Rather, I want to include what proportion of  emails sent by someone is sent to a person of interest.
+
+Trying out several classifiers with these features did, however, not result in a recall and precision of over 0.3. Based on intuition I then chose to only include some financial features. Even in the most basic setting of the Naive Bayes classifier this resulted in a precision and recall of over 0.3. The results will be discussed in more details in the following sections. Below is the list of features that resulted in a high enough precision and recall:
+
+- bonus
+- director_fees
+- exercised_stock_options
+- total_payments
+- total_stock_value
+- long_term_incentive
+- salary
 
 ## Algorithm selection
 > What algorithm did you end up using? What other one(s) did you try? How did model performance differ between algorithms?
+
 
 Result using top-5 features and a Naive Bayes classifier:
 Accuracy: 0.73900       Precision: 0.22604      Recall: 0.39500 F1: 0.28753     F2: 0.34363
