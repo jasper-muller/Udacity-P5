@@ -101,10 +101,33 @@ features_train, features_test, labels_train, labels_test = \
 # http://scikit-learn.org/stable/modules/pipeline.html
 
 # Provided to give you a starting point. Try a variety of classifiers.
-from sklearn.naive_bayes import GaussianNB
 
-clf = GaussianNB()
+# NAIVE BAYES
+# from sklearn.naive_bayes import GaussianNB
+# clf = GaussianNB()
+# clf = clf.fit(features_train, labels_train)
+
+# DECISION TREE
+from sklearn.tree import DecisionTreeClassifier
+tree = DecisionTreeClassifier()
+
+from sklearn.grid_search import GridSearchCV
+clf = GridSearchCV(estimator=tree,
+                           param_grid={'min_samples_split': [2, 4, 6, 8, 10, 12,
+                                                             14, 16, 18, 20]})
+
 clf = clf.fit(features_train, labels_train)
+
+# SUPPORT VECTOR MACHINE
+# from sklearn.svm import SVC
+# svm = SVC()
+#
+# from sklearn.grid_search import GridSearchCV
+# clf = GridSearchCV(estimator=svm,
+#                            param_grid={'C': [0.01, 0.1, 1, 10, 100],
+#                                        'gamma': [0.01, 0.1, 10, 100]})
+#
+# clf = clf.fit(features_train, labels_train)
 
 # Task 5: Tune your classifier to achieve better than .3 precision and recall
 # using our testing script. Check the tester.py script in the final project
@@ -112,8 +135,6 @@ clf = clf.fit(features_train, labels_train)
 # function. Because of the small size of the dataset, the script uses
 # stratified shuffle split cross validation. For more info:
 # http://scikit-learn.org/stable/modules/generated/sklearn.cross_validation.StratifiedShuffleSplit.html
-
-# Example starting point. Try investigating other evaluation techniques!
 
 # Task 6: Dump your classifier, dataset, and features_list so anyone can
 # check your results. You do not need to change anything below, but make sure

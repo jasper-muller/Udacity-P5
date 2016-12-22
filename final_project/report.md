@@ -75,18 +75,46 @@ Trying out several classifiers with these features did, however, not result in a
 ## Algorithm selection
 > What algorithm did you end up using? What other one(s) did you try? How did model performance differ between algorithms?
 
-
 Result using top-5 features and a Naive Bayes classifier:
-Accuracy: 0.73900       Precision: 0.22604      Recall: 0.39500 F1: 0.28753     F2: 0.34363
-Total predictions: 15000        True positives:  790    False positives: 2705   False negatives: 1210   True negatives: 10295
 
-Changing to top-10 features results in exactly the same results
+    Accuracy: 0.73900       Precision: 0.22604      Recall: 0.39500 F1: 0.28753     F2: 0.34363
+    Total predictions: 15000        True positives:  790    False positives: 2705   False negatives: 1210   True negatives: 10295
 
 Using feature scaling with top-10 features results in same results
 
-GaussianNB()
-Accuracy: 0.81940       Precision: 0.35654      Recall: 0.44050 F1: 0.39410     F2: 0.42069
+    Accuracy: 0.81940       Precision: 0.35654      Recall: 0.44050 F1: 0.39410     F2: 0.42069
         Total predictions: 15000        True positives:  881    False positives: 1590   False negatives: 1119   True negatives: 11410
+asd
+
+    GaussianNB()
+        Accuracy: 0.81940       Precision: 0.35654      Recall: 0.44050 F1: 0.39410     F2: 0.42069
+        Total predictions: 15000        True positives:  881    False positives: 1590   False negatives: 1119        True negatives: 11410
+
+asd
+
+    Got a divide by zero when trying out: GridSearchCV(cv=None, error_score='raise',
+       estimator=SVC(C=1.0, cache_size=200, class_weight=None, coef0=0.0,
+           decision_function_shape=None, degree=3, gamma='auto', kernel='rbf',
+           max_iter=-1, probability=False, random_state=None, shrinking=True,
+           tol=0.001, verbose=False),
+       fit_params={}, iid=True, n_jobs=1,
+       param_grid={'C': [0.01, 0.1, 1, 10, 100], 'gamma': [0.01, 0.1, 10, 100]},
+       pre_dispatch='2*n_jobs', refit=True, scoring=None, verbose=0)
+       Precision or recall may be undefined due to a lack of true positive predicitons.
+
+assessed
+
+    GridSearchCV(cv=None, error_score='raise',
+       estimator=DecisionTreeClassifier(class_weight=None, criterion='gini', max_depth=None,
+            max_features=None, max_leaf_nodes=None, min_samples_leaf=1,
+            min_samples_split=2, min_weight_fraction_leaf=0.0,
+            presort=False, random_state=None, splitter='best'),
+       fit_params={}, iid=True, n_jobs=1,
+       param_grid={'min_samples_split': [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]},
+       pre_dispatch='2*n_jobs', refit=True, scoring=None, verbose=0)
+        Accuracy: 0.81733       Precision: 0.27791      Recall: 0.23150 F1: 0.25259     F2: 0.23950
+        Total predictions: 15000        True positives:  463    False positives: 1203   False negatives: 1537   True negatives: 11797
+
 
 #### Pick an algorithm
 At least 2 different algorithms are attempted and their performance is compared, with the more performant one used in the final analysis.
