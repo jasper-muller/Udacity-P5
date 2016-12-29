@@ -1,5 +1,4 @@
 # Report
-Introduction
 
 ## Project goals
 >Summarize for us the goal of this project and how machine learning is useful in trying to accomplish it.
@@ -79,24 +78,42 @@ Trying out several classifiers with these features did, however, not result in a
 ## Algorithm selection
 > What algorithm did you end up using? What other one(s) did you try? How did model performance differ between algorithms?
 
-Result using top-5 features and a Naive Bayes classifier:
+In the final version I used a Naive Bayes classifier. The reason is that this classifier led to a satisfactory precision and recall out-of-the box with the features presented above.
 
-    Accuracy: 0.73900       Precision: 0.22604      Recall: 0.39500 F1: 0.28753     F2: 0.34363
-    Total predictions: 15000        True positives:  790    False positives: 2705   False negatives: 1210   True negatives: 10295
+I did try some other classifiers and feature combinations, see the results below.
 
-Using feature scaling with top-10 features results in same results
-
-    Accuracy: 0.81940       Precision: 0.35654      Recall: 0.44050 F1: 0.39410     F2: 0.42069
-        Total predictions: 15000        True positives:  881    False positives: 1590   False negatives: 1119   True negatives: 11410
-asd
+#### Result using top-5 features from SelectKBest and a Naive Bayes classifier
 
     GaussianNB()
-        Accuracy: 0.81940       Precision: 0.35654      Recall: 0.44050 F1: 0.39410     F2: 0.42069
-        Total predictions: 15000        True positives:  881    False positives: 1590   False negatives: 1119        True negatives: 11410
+        Accuracy: 0.73900
+        Precision: 0.22604
+        Recall: 0.39500
+        F1: 0.28753
+        F2: 0.34363
+        Total predictions: 15000        
+        True positives:  790    
+        False positives: 2705   
+        False negatives: 1210   
+        True negatives: 10295
 
-asd
+#### Result using intuitively selected features and a Naive Bayes classifier
 
-    Got a divide by zero when trying out: GridSearchCV(cv=None, error_score='raise',
+    GaussianNB()
+        Accuracy: 0.81940
+        Precision: 0.35654
+        Recall: 0.44050
+        F1: 0.39410
+        F2: 0.42069
+        Total predictions: 15000
+        True positives:  881
+        False positives: 1590
+        False negatives: 1119
+        True negatives: 11410
+
+#### Result using intuitively selected features and GridSearchCV with a SVM classifier
+Grid search definition:
+
+    GridSearchCV(cv=None, error_score='raise',
        estimator=SVC(C=1.0, cache_size=200, class_weight=None, coef0=0.0,
            decision_function_shape=None, degree=3, gamma='auto', kernel='rbf',
            max_iter=-1, probability=False, random_state=None, shrinking=True,
@@ -104,9 +121,15 @@ asd
        fit_params={}, iid=True, n_jobs=1,
        param_grid={'C': [0.01, 0.1, 1, 10, 100], 'gamma': [0.01, 0.1, 10, 100]},
        pre_dispatch='2*n_jobs', refit=True, scoring=None, verbose=0)
-       Precision or recall may be undefined due to a lack of true positive predicitons.
 
-assessed
+Result:
+
+       Got a divide by zero when trying out: [..]
+       Precision or recall may be undefined due to a lack of true positive predictions.
+
+#### Result using intuitively selected features and GridSearchCV with a DecisionTreeClassifier
+
+Grid search definition:
 
     GridSearchCV(cv=None, error_score='raise',
        estimator=DecisionTreeClassifier(class_weight=None, criterion='gini', max_depth=None,
@@ -116,35 +139,36 @@ assessed
        fit_params={}, iid=True, n_jobs=1,
        param_grid={'min_samples_split': [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]},
        pre_dispatch='2*n_jobs', refit=True, scoring=None, verbose=0)
-        Accuracy: 0.81733       Precision: 0.27791      Recall: 0.23150 F1: 0.25259     F2: 0.23950
-        Total predictions: 15000        True positives:  463    False positives: 1203   False negatives: 1537   True negatives: 11797
 
+Results:
 
-#### Pick an algorithm
-At least 2 different algorithms are attempted and their performance is compared, with the more performant one used in the final analysis.
+        Accuracy: 0.81733       
+        Precision: 0.27791      
+        Recall: 0.23150
+        F1: 0.25259     
+        F2: 0.23950
+        Total predictions: 15000        
+        True positives:  463    
+        False positives: 1203   
+        False negatives: 1537   
+        True negatives: 11797
+
 
 ## Parameter tuning
->What does it mean to tune the parameters of an algorithm, and what can happen if you don’t do this well?  How did you tune the parameters of your particular algorithm? (Some algorithms do not have parameters that you need to tune -- if this is the case for the one you picked, identify and briefly explain how you would have done it for the model that was not your final choice or a different model that does utilize parameter tuning, e.g. a decision tree classifier).  [relevant rubric item: “tune the algorithm”]
+>What does it mean to tune the parameters of an algorithm, and what can happen if you don’t do this well?  How did you tune the parameters of your particular algorithm?
 
-#### Tune the algorithm
-At least one important parameter tuned with at least 3 settings investigated systematically, or any of the following are true:
+Tuning the parameters of an algorithm means that you look for the set of parameters that results in the best algorithm performance on the testing set. An algorithm that is not tuned well, may overfit to the training data or not perform as well as it would when the algorithm *is* tuned.
 
-GridSearchCV used for parameter tuning
-Several parameters tuned
-Parameter tuning incorporated into algorithm selection (i.e. parameters tuned for more than one algorithm, and best algorithm-tune combination selected for final analysis).
-
+I did not tune the Naive Bayes classifier, but I did use GridSearchCV for the DecisionTreeClassifier and the SVM classifier. For the DecisionTreeClassifier I tuned the parameter min_samples_split, which specifies how many samples should at least be in a branch for the algorithm to be 'allowed' to split the branch. For the SVM classifier I tuned the C and gamma parameters as suggested by the [sklearn documentation](http://scikit-learn.org/stable/auto_examples/svm/plot_rbf_parameters.html). C is the penalty for the error term and gamma the kernel coefficient for the rbf kernel. As the documentation puts it, C specifies the penalty for misclassifying an observation whereas gamma specifies the influence of a single observation on the overall model.
 
 ## Validation
->What is validation, and what’s a classic mistake you can make if you do it wrong? How did you validate your analysis?  [relevant rubric item: “validation strategy”]
+>What is validation, and what’s a classic mistake you can make if you do it wrong? How did you validate your analysis?
 
+Validation means that we assert the performance of a trained classifier on data that it has not seen before. As such we test how well a classifier generalizes to unseen data. A classic mistake is to train and test a classifier on the same (training) data.
 
-#### Validation strategy
-Response addresses what validation is and why it is important.
-
-Performance of the final algorithm selected is assessed by splitting the data into training and testing sets or through the use of cross validation, noting the specific type of validation performed.
+For the validation of my classifier I used the provided tester file `tester.py`. This file uses a stratified shuffle split cross-validation strategy to validate the performance of a classifier.
 
 ## Evaluation metrics
->Give at least 2 evaluation metrics and your average performance for each of them.  Explain an interpretation of your metrics that says something human-understandable about your algorithm’s performance. [relevant rubric item: “usage of evaluation metrics”]
+>Give at least 2 evaluation metrics and your average performance for each of them.  Explain an interpretation of your metrics that says something human-understandable about your algorithm’s performance.
 
-#### Usage of evaluation metrics
-At least two appropriate metrics are used to evaluate algorithm performance (e.g. precision and recall), and the student articulates what those metrics measure in context of the project task.
+As presented in the section *Algorithm Selection*, the precision of my classifier is 0.357 and the recall equals 0.441. Intuitively, this means that 35.7% of the employees that were classified as person of interest, were indeed a person of interest. Moreover, of all persons of interest in the dataset, the classifier is able to identify 44.1% correctly as a person of interest.
