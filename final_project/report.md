@@ -53,27 +53,32 @@ The table below shows the missing values per feature. It can be seen that the PO
 ## Feature selection
 > What features did you end up using in your POI identifier, and what selection process did you use to pick them?
 
-Initially I used scikit-learn's `SelectKBest` module to select what features to use in training a classifier. As a scoring function I used `f-classif` and as a starting point I chose to include the top-5 features. The resulting five features, along with their scores and p-values, can be found in the table below.
+I used scikit-learn's `SelectKBest` module to select what features to use in training a classifier. As a scoring function I used `f-classif`. To test what number of features to include, I set up a Gaussian Naive Bayes classifier in combination with an adapted version of the scoring function in `tester.py`. The result can be found in the figure below, which shows the classifier performance in terms of recall and precision for different values of k.  
 
-| feature  | F-score  | p-value  |
-|----------|--------|----------|
-| bonus  | 30.7  | 2.50e-07  |
-| salary  | 15.9  | 1.31e-04  |
-| relative_messages_to_poi  | 15.8  |  1.33e-04 |
-| shared_receipt_with_poi  | 10.7   | 1.46e-03 |
-| total_stock_value  | 10.6 | 1.53e-03 |
+![](classifier_performance_with_varying_number_of_features.png)
 
-The third feature in this table is a feature I engineered myself. My idea was that it does not make sense to look at just he number of messages sent to a person of interest. Rather, I want to include what proportion of  emails sent by someone is sent to a person of interest.
+From this figure it becomes apparent that the best number of features to include is 6. The table below summarizes these findings:
 
-Trying out several classifiers with these features did, however, not result in a recall and precision of over 0.3. Based on intuition I then chose to only include some financial features. Even in the most basic setting of the Naive Bayes classifier this resulted in a precision and recall of over 0.3. The results will be discussed in more details in the following sections. Below is the list of features that resulted in a high enough precision and recall:
+| metric    | value |
+|-----------|-------|
+| f1        | 0.43  |
+| f2        | 0.40  |
+| recall    | 0.38  |
+| precision | 0.49  |
+| accuracy  | 0.86  |
 
-- bonus
-- director_fees
-- exercised_stock_options
-- total_payments
-- total_stock_value
-- long_term_incentive
-- salary
+Features and their relative importance
+
+| feature                  | score |
+|--------------------------|-------|
+| bonus                    |  20.79  |
+| deferred_income          |  .     |
+| exercised_stock_options  |  .     |
+| relative_messages_to_poi |  .     |
+| salary                   |  .     |
+| total_stock_value        |  .     |
+
+The fourth feature in this table (`relative_messages_to_poi `) is a feature I engineered myself. My idea was that it does not make sense to look at just he number of messages sent to a person of interest. Rather, I want to include what proportion of emails sent by someone is sent to a person of interest.
 
 ## Algorithm selection
 > What algorithm did you end up using? What other one(s) did you try? How did model performance differ between algorithms?

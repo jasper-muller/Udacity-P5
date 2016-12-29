@@ -12,30 +12,13 @@ from tester import dump_classifier_and_data
 # features_list is a list of strings, each of which is a feature name.
 # The first feature must be "poi".
 
-features = ['poi',
-            'bonus',
-            'deferral_payments',
-            'deferred_income',
-            'director_fees',
-            'exercised_stock_options',
-            'expenses',
-            'from_messages',
-            'from_poi_to_this_person',
-            'from_this_person_to_poi',
-            'loan_advances',
-            'long_term_incentive',
-            'other',
-            'restricted_stock',
-            'restricted_stock_deferred',
-            'salary',
-            'shared_receipt_with_poi',
-            'to_messages',
-            'total_payments',
-            'total_stock_value']
-
-features_list = ['poi', 'bonus', 'director_fees', 'exercised_stock_options',
-                 'total_payments', 'total_stock_value', 'long_term_incentive',
-                 'salary']
+features_list = ['poi',
+                 'bonus',
+                 'deferred_income',
+                 'exercised_stock_options',
+                 'relative_messages_to_poi',
+                 'salary',
+                 'total_stock_value']
 
 # Load the dictionary containing the dataset
 with open("final_project_dataset.pkl", "r") as data_file:
@@ -81,11 +64,6 @@ my_dataset = data_dict
 data = featureFormat(my_dataset, features_list, sort_keys = True)
 labels, features = targetFeatureSplit(data)
 
-from sklearn.preprocessing import MinMaxScaler
-
-scaler = MinMaxScaler()
-features = scaler.fit_transform(features)
-
 from sklearn.cross_validation import train_test_split
 features_train, features_test, labels_train, labels_test = \
     train_test_split(features, labels, test_size=0.3, random_state=42)
@@ -105,29 +83,6 @@ features_train, features_test, labels_train, labels_test = \
 # NAIVE BAYES
 from sklearn.naive_bayes import GaussianNB
 clf = GaussianNB()
-clf = clf.fit(features_train, labels_train)
-
-# DECISION TREE
-# from sklearn.tree import DecisionTreeClassifier
-# tree = DecisionTreeClassifier()
-#
-# from sklearn.grid_search import GridSearchCV
-# clf = GridSearchCV(estimator=tree,
-#                            param_grid={'min_samples_split': [2, 4, 6, 8, 10, 12,
-#                                                              14, 16, 18, 20]})
-#
-# clf = clf.fit(features_train, labels_train)
-
-# SUPPORT VECTOR MACHINE
-# from sklearn.svm import SVC
-# svm = SVC()
-#
-# from sklearn.grid_search import GridSearchCV
-# clf = GridSearchCV(estimator=svm,
-#                            param_grid={'C': [0.01, 0.1, 1, 10, 100],
-#                                        'gamma': [0.01, 0.1, 10, 100]})
-#
-# clf = clf.fit(features_train, labels_train)
 
 # Task 5: Tune your classifier to achieve better than .3 precision and recall
 # using our testing script. Check the tester.py script in the final project
