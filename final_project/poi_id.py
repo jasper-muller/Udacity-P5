@@ -103,20 +103,20 @@ features_train, features_test, labels_train, labels_test = \
 # Provided to give you a starting point. Try a variety of classifiers.
 
 # NAIVE BAYES
-# from sklearn.naive_bayes import GaussianNB
-# clf = GaussianNB()
-# clf = clf.fit(features_train, labels_train)
+from sklearn.naive_bayes import GaussianNB
+clf = GaussianNB()
+clf = clf.fit(features_train, labels_train)
 
 # DECISION TREE
-from sklearn.tree import DecisionTreeClassifier
-tree = DecisionTreeClassifier()
-
-from sklearn.grid_search import GridSearchCV
-clf = GridSearchCV(estimator=tree,
-                           param_grid={'min_samples_split': [2, 4, 6, 8, 10, 12,
-                                                             14, 16, 18, 20]})
-
-clf = clf.fit(features_train, labels_train)
+# from sklearn.tree import DecisionTreeClassifier
+# tree = DecisionTreeClassifier()
+#
+# from sklearn.grid_search import GridSearchCV
+# clf = GridSearchCV(estimator=tree,
+#                            param_grid={'min_samples_split': [2, 4, 6, 8, 10, 12,
+#                                                              14, 16, 18, 20]})
+#
+# clf = clf.fit(features_train, labels_train)
 
 # SUPPORT VECTOR MACHINE
 # from sklearn.svm import SVC

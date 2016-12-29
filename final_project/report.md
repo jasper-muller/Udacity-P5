@@ -47,6 +47,10 @@ The first outlier that immediately caught my eye, was the entry *TOTAL*. I found
 
 Apart from this obvious outlier, there was one other employee that I excluded: *The Travel Agency In The Park*. The name of this entry suggested that it did not describe an employee but rather a company of some sort.
 
+The table below shows the missing values per feature. It can be seen that the POI feature is filled for each person, whereas loan_advances the feature with the most missing values (142 to be exact).
+
+![](nans_per_feature.png)
+
 ## Feature selection
 > What features did you end up using in your POI identifier, and what selection process did you use to pick them?
 
