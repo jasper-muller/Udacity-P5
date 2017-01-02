@@ -57,28 +57,39 @@ I used scikit-learn's `SelectKBest` module to select what features to use in tra
 
 ![](classifier_performance_with_varying_number_of_features.png)
 
-From this figure it becomes apparent that the best number of features to include is 6. The table below summarizes these findings:
+This figure suggests that the best number of features to use is 6. For this number of features, the Naive Bayes classifier returns the following performance metrics from `tester.py`. Note that I did not scale the features, as this is not necessary for a Gaussian Naive Bayes classifier.
 
-| metric    | value |
+| Metric    | Value |
 |-----------|-------|
-| f1        | 0.43  |
-| f2        | 0.40  |
-| recall    | 0.38  |
-| precision | 0.49  |
-| accuracy  | 0.86  |
+| F1        | 0.44  |
+| F2        | 0.41  |
+| Recall    | 0.39  |
+| Precision | 0.52  |
+| Accuracy  | 0.86  |
 
-Features and their relative importance
+The table below documents the selected features along with their score from SelectKBest.
 
-| feature                  | score |
-|--------------------------|-------|
+| Feature                  |  Score  |
+|--------------------------|---------|
 | bonus                    |  20.79  |
-| deferred_income          |  .     |
-| exercised_stock_options  |  .     |
-| relative_messages_to_poi |  .     |
-| salary                   |  .     |
-| total_stock_value        |  .     |
+| deferred_income          |  11.46  |
+| exercised_stock_options  |  24.82  |
+| relative_messages_to_poi |  16.41  |
+| salary                   |  18.29  |
+| total_stock_value        |  24.18  |
 
 The fourth feature in this table (`relative_messages_to_poi `) is a feature I engineered myself. My idea was that it does not make sense to look at just he number of messages sent to a person of interest. Rather, I want to include what proportion of emails sent by someone is sent to a person of interest.
+
+To check the effect of this feature on model performance, I ran the same Gaussian Naive Bayes classifier without `relative_messages_to_poi`. The table below compares the classifier performance with and without the additional feature. The difference in performance is small, but the classifier performs slightly better on almost all metrics when the feature is included.
+
+| Metric    | Value - not including `relative_messages_to_poi` | Value - including `relative_messages_to_poi` |
+|-----------|-------| ------- |
+| F1        | 0.43  | 0.44 |
+| F2        | 0.40  | 0.41 |
+| Recall    | 0.38  | 0.39 |
+| Precision | 0.49  | 0.52 |
+| Accuracy  | 0.86  | 0.86 |
+
 
 ## Algorithm selection
 > What algorithm did you end up using? What other one(s) did you try? How did model performance differ between algorithms?
@@ -87,7 +98,7 @@ In the final version I used a Naive Bayes classifier. The reason is that this cl
 
 I did try some other classifiers and feature combinations, see the results below.
 
-#### Result using top-5 features from SelectKBest and a Naive Bayes classifier
+#### Result using top-6 features from SelectKBest and a Naive Bayes classifier
 
     GaussianNB()
         Accuracy: 0.73900
@@ -101,21 +112,8 @@ I did try some other classifiers and feature combinations, see the results below
         False negatives: 1210   
         True negatives: 10295
 
-#### Result using intuitively selected features and a Naive Bayes classifier
 
-    GaussianNB()
-        Accuracy: 0.81940
-        Precision: 0.35654
-        Recall: 0.44050
-        F1: 0.39410
-        F2: 0.42069
-        Total predictions: 15000
-        True positives:  881
-        False positives: 1590
-        False negatives: 1119
-        True negatives: 11410
-
-#### Result using intuitively selected features and GridSearchCV with a SVM classifier
+#### Result using top-6 features from SelectKBest and GridSearchCV with a SVM classifier
 Grid search definition:
 
     GridSearchCV(cv=None, error_score='raise',
@@ -132,7 +130,7 @@ Result:
        Got a divide by zero when trying out: [..]
        Precision or recall may be undefined due to a lack of true positive predictions.
 
-#### Result using intuitively selected features and GridSearchCV with a DecisionTreeClassifier
+#### Result using top-6 features from SelectKBest and GridSearchCV with a DecisionTreeClassifier
 
 Grid search definition:
 
