@@ -33,7 +33,7 @@ Related to emails:
 - **to_messages**: the amount of email messages received by this person
 - **from_poi_to_this_person**: the amount of email messages from a person of interest to this person
 - **from_this_person_to_poi**: the amount of email messages from this person to a person of interest
-- shared_receipt_with_poi
+- **shared_receipt_with_poi**: number of messages in which someone received a message that was also sent to a person of interest
 
 Related to persons of interest:
 - **poi**: flag to identify whether a person is a person of interest. E.g. because of lawsuits etc.
@@ -46,7 +46,7 @@ The first outlier that immediately caught my eye, was the entry *TOTAL*. I found
 
 Apart from this obvious outlier, there was one other employee that I excluded: *The Travel Agency In The Park*. The name of this entry suggested that it did not describe an employee but rather a company of some sort.
 
-The table below shows the missing values per feature. It can be seen that the POI feature is filled for each person, whereas loan_advances the feature with the most missing values (142 to be exact).
+The table below shows the missing values per feature. It can be seen that the POI feature is filled for each person. The feature loan_advances has the most missing values, 142 in total.
 
 ![](nans_per_feature.png)
 
@@ -112,49 +112,37 @@ I did try some other classifiers and feature combinations, see the results below
         False negatives: 1210   
         True negatives: 10295
 
+#### Result using top-6 features from SelectKBest and GridSearchCV with a DecisionTreeClassifier
+The second option I tested was to do a grid-search using a decision tree classifier. For the parameter grid I chose to tune the paramters `min_samples_split` and `max_depth`. For `min_samples_split` I tested a sequence of 2^n. For the maximum depth of the tree I tested a sequence from two to the number of selected features.
+
+    {'min_samples_split': [2, 4, 8, 16, 32],
+     'max_depth': [2, 3, 4, 5, 6]}
+
+I found that running the grid-search multiple times yielded different results for the value of min_samples_split. It equaled either 2, 16, or 32. This may be due to the random initialization of the decision tree. The resulting mean accuracy score remained the same: 0.88. To overcome the effect of random initialization we may test an ensemble method such as a random forest classifier. Otherwise, we could use a different metric than the mean accuracy score. I used this score because it is the default scorer that comes with the DecisionTreeClassifier and hence it is also used by default by GridSearchCV (see [GridSearchCV documentation](http://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html)). This may not have been the best approach. Given the fact that I already had a working classifier that performed according to performance criteria, I chose to abandon the improvement of the decision tree classifier due to time constrains.
+
+Results of the decision tree classifier using `min_samples_split` = 16 and a depth of 2:
+
+| Metric    | Value |
+|-----------|-------|
+| F1        | 0.19  |
+| F2        | 0.16  |
+| Recall    | 0.14  |
+| Precision | 0.28  |
+| Accuracy  | 0.82  |
+
 
 #### Result using top-6 features from SelectKBest and GridSearchCV with a SVM classifier
-Grid search definition:
+Next, I tried a support vector machine. Again I used GridSearchCV to tune two parameters: gamma and C. A more elaborate discussion on these parameters follows in the section 'parameter tuning'. For both patameters I tested searched a sequence of values on a logarithmic scale from 0.01 to 100:
 
-    GridSearchCV(cv=None, error_score='raise',
-       estimator=SVC(C=1.0, cache_size=200, class_weight=None, coef0=0.0,
-           decision_function_shape=None, degree=3, gamma='auto', kernel='rbf',
-           max_iter=-1, probability=False, random_state=None, shrinking=True,
-           tol=0.001, verbose=False),
-       fit_params={}, iid=True, n_jobs=1,
-       param_grid={'C': [0.01, 0.1, 1, 10, 100], 'gamma': [0.01, 0.1, 10, 100]},
-       pre_dispatch='2*n_jobs', refit=True, scoring=None, verbose=0)
+    {'C': [0.01, 0.1, 1, 10, 100],
+     'gamma': [0.01, 0.1, 1, 10, 100]}
 
-Result:
+Unfortunately this grid-search did not yield any results. As explained above, due to time constrains I chose to continue with the Naive Bayes classfier that yielded satisfactory performance out-of-the-box.
 
-       Got a divide by zero when trying out: [..]
-       Precision or recall may be undefined due to a lack of true positive predictions.
+The result from the SVM grid-search:
 
-#### Result using top-6 features from SelectKBest and GridSearchCV with a DecisionTreeClassifier
-
-Grid search definition:
-
-    GridSearchCV(cv=None, error_score='raise',
-       estimator=DecisionTreeClassifier(class_weight=None, criterion='gini', max_depth=None,
-            max_features=None, max_leaf_nodes=None, min_samples_leaf=1,
-            min_samples_split=2, min_weight_fraction_leaf=0.0,
-            presort=False, random_state=None, splitter='best'),
-       fit_params={}, iid=True, n_jobs=1,
-       param_grid={'min_samples_split': [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]},
-       pre_dispatch='2*n_jobs', refit=True, scoring=None, verbose=0)
-
-Results:
-
-        Accuracy: 0.81733       
-        Precision: 0.27791      
-        Recall: 0.23150
-        F1: 0.25259     
-        F2: 0.23950
-        Total predictions: 15000        
-        True positives:  463    
-        False positives: 1203   
-        False negatives: 1537   
-        True negatives: 11797
+     Got a divide by zero when trying out: [..]
+     Precision or recall may be undefined due to a lack of true positive predictions.
 
 
 ## Parameter tuning
@@ -170,6 +158,8 @@ I did not tune the Naive Bayes classifier, but I did use GridSearchCV for the De
 Validation means that we assert the performance of a trained classifier on data that it has not seen before. As such we test how well a classifier generalizes to unseen data. A classic mistake is to train and test a classifier on the same (training) data.
 
 For the validation of my classifier I used the provided tester file `tester.py`. This file uses a stratified shuffle split cross-validation strategy to validate the performance of a classifier.
+
+The shuffling indicates that we randomly select samples and assign them to a fold. Stratified cross validation means that we divide the folds such that each fold has the same percentage of POI's as in the entire dataset. Since the number of POI's is relatively small, if we would not use stratified cross validation we might arrive at folds that do not contain any POI's.
 
 ## Evaluation metrics
 >Give at least 2 evaluation metrics and your average performance for each of them.  Explain an interpretation of your metrics that says something human-understandable about your algorithm’s performance.

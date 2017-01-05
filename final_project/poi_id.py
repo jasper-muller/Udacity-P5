@@ -84,15 +84,31 @@ features_train, features_test, labels_train, labels_test = \
 from sklearn.naive_bayes import GaussianNB
 clf = GaussianNB()
 
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.grid_search import GridSearchCV
+# DECISION TREE
+# from sklearn.tree import DecisionTreeClassifier
+# from sklearn.grid_search import GridSearchCV
+#
+# tree = DecisionTreeClassifier()
+# params = {'min_samples_split': [2, 4, 8, 16, 32],
+#           'max_depth': [2, 3, 4, 5, 6]}
+# clf = GridSearchCV(tree, param_grid=params)
+# clf.fit(features_train, labels_train)
+# print clf.best_params_
+# print clf.scorer_
+# clf = clf.best_estimator_
 
-tree = DecisionTreeClassifier()
+# # SVM
+# from sklearn.svm import SVC
+# from sklearn.grid_search import GridSearchCV
+# svm = SVC()
+# params = {'C': [0.01, 0.1, 1, 1, 10, 100],
+#           'gamma': [0.01, 0.1, 1, 1, 10, 100]}
+#
+# clf = GridSearchCV(svm, param_grid=params)
+# clf.fit(features_train, labels_train)
+# print clf.best_params_
+# clf = clf.best_estimator_
 
-params = {'min_samples_split': [2, 4, 8, 16, 32],
-          'max_depth': [2, 3, 4, 5, 6]}
-
-clf = GridSearchCV(tree, param_grid=params)
 
 # Task 5: Tune your classifier to achieve better than .3 precision and recall
 # using our testing script. Check the tester.py script in the final project
