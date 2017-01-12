@@ -57,7 +57,7 @@ I used scikit-learn's `SelectKBest` module to select what features to use in tra
 
 ![](classifier_performance_with_varying_number_of_features.png)
 
-This figure suggests that the best number of features to use is 6. For this number of features, the Naive Bayes classifier returns the following performance metrics from `tester.py`. Note that I did not scale the features, as this is not necessary for a Gaussian Naive Bayes classifier.
+This figure suggests that the best number of features to use is 6. For this number of features, the Naive Bayes classifier returns the following performance metrics from `tester.py`. Note that for the Naive Bayes Classifier and the Decision Tree Classifier I did not scale the features, as it is not necessary for these algorithms. To test the Support Vector Machine, I used sklearn's MinMaxScaler to scale the features beforehand.
 
 | Metric    | Value |
 |-----------|-------|
@@ -99,28 +99,21 @@ In the final version I used a Naive Bayes classifier. The reason is that this cl
 I did try some other classifiers and feature combinations, see the results below.
 
 #### Result using top-6 features from SelectKBest and a Naive Bayes classifier
-
-    GaussianNB()
-        Accuracy: 0.73900
-        Precision: 0.22604
-        Recall: 0.39500
-        F1: 0.28753
-        F2: 0.34363
-        Total predictions: 15000        
-        True positives:  790    
-        False positives: 2705   
-        False negatives: 1210   
-        True negatives: 10295
+| Metric    | Value |
+|-----------|-------|
+| F1        | 0.44  |
+| F2        | 0.41  |
+| Recall    | 0.39  |
+| Precision | 0.52  |
+| Accuracy  | 0.86  |
 
 #### Result using top-6 features from SelectKBest and GridSearchCV with a DecisionTreeClassifier
-The second option I tested was to do a grid-search using a decision tree classifier. For the parameter grid I chose to tune the paramters `min_samples_split` and `max_depth`. For `min_samples_split` I tested a sequence of 2^n. For the maximum depth of the tree I tested a sequence from two to the number of selected features.
+The second option I tested was to do a grid-search using a decision tree classifier. For the parameter grid I chose to tune the parameters `min_samples_split` and `max_depth`. For `min_samples_split` I tested a sequence of 2^n. For the maximum depth of the tree I tested a sequence from two to the number of selected features.
 
     {'min_samples_split': [2, 4, 8, 16, 32],
      'max_depth': [2, 3, 4, 5, 6]}
 
-I found that running the grid-search multiple times yielded different results for the value of min_samples_split. It equaled either 2, 16, or 32. This may be due to the random initialization of the decision tree. The resulting mean accuracy score remained the same: 0.88. To overcome the effect of random initialization we may test an ensemble method such as a random forest classifier. Otherwise, we could use a different metric than the mean accuracy score. I used this score because it is the default scorer that comes with the DecisionTreeClassifier and hence it is also used by default by GridSearchCV (see [GridSearchCV documentation](http://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html)). This may not have been the best approach. Given the fact that I already had a working classifier that performed according to performance criteria, I chose to abandon the improvement of the decision tree classifier due to time constrains.
-
-Results of the decision tree classifier using `min_samples_split` = 16 and a depth of 2:
+Using this parameter grid with a random_state of 42, I found a value of 16 for `min_samples_split` and a `max_depth` of 2. Using these settings resulted in the following algorithm performance as measured by `tester.py`.
 
 | Metric    | Value |
 |-----------|-------|
@@ -132,25 +125,24 @@ Results of the decision tree classifier using `min_samples_split` = 16 and a dep
 
 
 #### Result using top-6 features from SelectKBest and GridSearchCV with a SVM classifier
-Next, I tried a support vector machine. Again I used GridSearchCV to tune two parameters: gamma and C. A more elaborate discussion on these parameters follows in the section 'parameter tuning'. For both patameters I tested searched a sequence of values on a logarithmic scale from 0.01 to 100:
+Next, I tried a support vector machine. Again I used GridSearchCV to tune two parameters: `gamma` and `C`. A more elaborate discussion on these parameters follows in the section 'parameter tuning'. For both parameters I searched a sequence of values on a logarithmic scale from 0.01 to 100.
 
     {'C': [0.01, 0.1, 1, 10, 100],
      'gamma': [0.01, 0.1, 1, 10, 100]}
 
-Unfortunately this grid-search did not yield any results. As explained above, due to time constrains I chose to continue with the Naive Bayes classfier that yielded satisfactory performance out-of-the-box.
+Running GridSearchCV with the paramter grid above, I found that `C=0.01`, `gamma=0.01`. Unfortunately, using these settings did not result in any true positive predictions. The result from the SVM grid-search as given by running `tester.py`:
 
-The result from the SVM grid-search:
+     `Got a divide by zero when trying out: [..]
+     Precision or recall may be undefined due to a lack of true positive predictions.`
 
-     Got a divide by zero when trying out: [..]
-     Precision or recall may be undefined due to a lack of true positive predictions.
-
+As the Naive Bayes classifier yielded a satisfactory performance 'out-of-the-box', I chose to continue with this algorithm.
 
 ## Parameter tuning
 >What does it mean to tune the parameters of an algorithm, and what can happen if you don’t do this well?  How did you tune the parameters of your particular algorithm?
 
-Tuning the parameters of an algorithm means that you look for the set of parameters that results in the best algorithm performance on the testing set. An algorithm that is not tuned well, may overfit to the training data or not perform as well as it would when the algorithm *is* tuned.
+Tuning the parameters of an algorithm means that you look for the set of parameters that results in the best algorithm performance on the testing set. An algorithm that is not tuned well, may over-fit to the training data or not perform as well as it would when the algorithm *is* tuned.
 
-I did not tune the Naive Bayes classifier, but I did use GridSearchCV for the DecisionTreeClassifier and the SVM classifier. For the DecisionTreeClassifier I tuned the parameter min_samples_split, which specifies how many samples should at least be in a branch for the algorithm to be 'allowed' to split the branch. For the SVM classifier I tuned the C and gamma parameters as suggested by the [sklearn documentation](http://scikit-learn.org/stable/auto_examples/svm/plot_rbf_parameters.html). C is the penalty for the error term and gamma the kernel coefficient for the rbf kernel. As the documentation puts it, C specifies the penalty for misclassifying an observation whereas gamma specifies the influence of a single observation on the overall model.
+I did not tune the Naive Bayes classifier, but I did use GridSearchCV for the DecisionTreeClassifier and the SVM classifier. For the DecisionTreeClassifier I tuned the parameters `min_samples_split` and `max_depth`. The parameter `min_samples_split` specifies how many samples should at least be in a branch for the algorithm to be 'allowed' to split the branch. The `max_depth` specifies the maximum 'depth' of the decision tree, i.e. how many layers of branches it may contain. For the SVM classifier I tuned the `C` and `gamma` parameters as suggested by the [sklearn documentation](http://scikit-learn.org/stable/auto_examples/svm/plot_rbf_parameters.html). `C` is the penalty for the error term and `gamma` the kernel coefficient for the `rbf` kernel. As the documentation puts it, `C` specifies the penalty for misclassifying an observation whereas `gamma` specifies the influence of a single observation on the overall model.
 
 ## Validation
 >What is validation, and what’s a classic mistake you can make if you do it wrong? How did you validate your analysis?
@@ -164,4 +156,4 @@ The shuffling indicates that we randomly select samples and assign them to a fol
 ## Evaluation metrics
 >Give at least 2 evaluation metrics and your average performance for each of them.  Explain an interpretation of your metrics that says something human-understandable about your algorithm’s performance.
 
-As presented in the section *Algorithm Selection*, the precision of my classifier is 0.357 and the recall equals 0.441. Intuitively, this means that 35.7% of the employees that were classified as person of interest, were indeed a person of interest. Moreover, of all persons of interest in the dataset, the classifier is able to identify 44.1% correctly as a person of interest.
+As presented in the section *Algorithm Selection*, the precision of my classifier is 0.52 and the recall equals 0.39. Intuitively, this means that 52% of the employees that were classified as person of interest, were indeed a person of interest. Moreover, of all persons of interest in the dataset, the classifier is able to identify 39% correctly as a person of interest.
